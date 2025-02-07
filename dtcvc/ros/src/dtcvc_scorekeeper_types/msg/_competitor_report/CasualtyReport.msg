@@ -1,0 +1,9 @@
+uint8 drone_id
+uint8 casualty_id
+float64 observation_start
+float64 assessment_time
+float64 observation_end
+float64 processing_end
+Vitals vitals
+Injuries injuries
+Location location

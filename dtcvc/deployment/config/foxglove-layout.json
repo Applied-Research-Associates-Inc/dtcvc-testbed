@@ -1,0 +1,252 @@
+{
+  "configById": {
+    "TopicGraph!1f4mdki": {},
+    "SourceInfo!1fk50kd": {},
+    "RosOut!281e1ax": {
+      "searchTerms": [],
+      "minLogLevel": 1
+    },
+    "RawMessages!15djhvb": {
+      "diffEnabled": false,
+      "diffMethod": "custom",
+      "diffTopicPath": "",
+      "showFullMessageForDiff": false,
+      "topicPath": "/dtc/BP_AirVehicle_C_2147482234/imu",
+      "expansion": "all"
+    },
+    "RawMessages!25g8nzi": {
+      "diffEnabled": false,
+      "diffMethod": "custom",
+      "diffTopicPath": "",
+      "showFullMessageForDiff": false,
+      "topicPath": "/dtc/BP_AirVehicle_C_2147482234/GPSSensor/gps"
+    },
+    "RawMessages!3g5yg8l": {
+      "diffEnabled": false,
+      "diffMethod": "custom",
+      "diffTopicPath": "",
+      "showFullMessageForDiff": false,
+      "topicPath": "/competitor/drone_results",
+      "expansion": {
+        "casualty_reports": "e",
+        "0~casualty_reports": "c",
+        "vitals~0~casualty_reports": "e",
+        "injuries~0~casualty_reports": "e",
+        "trauma~injuries~0~casualty_reports": "e",
+        "alertness~injuries~0~casualty_reports": "e",
+        "location~0~casualty_reports": "e",
+        "1~casualty_reports": "c",
+        "vitals~1~casualty_reports": "e",
+        "injuries~1~casualty_reports": "e",
+        "trauma~injuries~1~casualty_reports": "e",
+        "alertness~injuries~1~casualty_reports": "e",
+        "location~1~casualty_reports": "e",
+        "2~casualty_reports": "c",
+        "vitals~2~casualty_reports": "e",
+        "injuries~2~casualty_reports": "e",
+        "trauma~injuries~2~casualty_reports": "e",
+        "alertness~injuries~2~casualty_reports": "e",
+        "location~2~casualty_reports": "e"
+      }
+    },
+    "Image!1bzylr2": {
+      "cameraState": {
+        "distance": 20,
+        "perspective": true,
+        "phi": 60,
+        "target": [
+          0,
+          0,
+          0
+        ],
+        "targetOffset": [
+          0,
+          0,
+          0
+        ],
+        "targetOrientation": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "thetaOffset": 45,
+        "fovy": 45,
+        "near": 0.5,
+        "far": 5000
+      },
+      "followMode": "follow-pose",
+      "scene": {},
+      "transforms": {},
+      "topics": {},
+      "layers": {},
+      "publish": {
+        "type": "point",
+        "poseTopic": "/move_base_simple/goal",
+        "pointTopic": "/clicked_point",
+        "poseEstimateTopic": "/initialpose",
+        "poseEstimateXDeviation": 0.5,
+        "poseEstimateYDeviation": 0.5,
+        "poseEstimateThetaDeviation": 0.26179939
+      },
+      "imageMode": {
+        "imageTopic": "/dtc/BP_AirVehicle_C_2147482234/BP_CameraSensor_RGB/image"
+      }
+    },
+    "Tab!2afokmb": {
+      "activeTabIdx": 1,
+      "tabs": [
+        {
+          "title": "1",
+          "layout": "TopicGraph!1f4mdki"
+        },
+        {
+          "title": "2",
+          "layout": "SourceInfo!1fk50kd"
+        },
+        {
+          "title": "3",
+          "layout": "RosOut!281e1ax"
+        }
+      ]
+    },
+    "Image!3mnp456": {
+      "cameraState": {
+        "distance": 20,
+        "perspective": true,
+        "phi": 60,
+        "target": [
+          0,
+          0,
+          0
+        ],
+        "targetOffset": [
+          0,
+          0,
+          0
+        ],
+        "targetOrientation": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "thetaOffset": 45,
+        "fovy": 45,
+        "near": 0.5,
+        "far": 5000
+      },
+      "followMode": "follow-pose",
+      "scene": {},
+      "transforms": {},
+      "topics": {},
+      "layers": {},
+      "publish": {
+        "type": "point",
+        "poseTopic": "/move_base_simple/goal",
+        "pointTopic": "/clicked_point",
+        "poseEstimateTopic": "/initialpose",
+        "poseEstimateXDeviation": 0.5,
+        "poseEstimateYDeviation": 0.5,
+        "poseEstimateThetaDeviation": 0.26179939
+      },
+      "imageMode": {
+        "imageTopic": "/dtc/BP_AirVehicle_C_2147482234/BP_CameraSensor_IR/image"
+      }
+    },
+    "Indicator!114ll1e": {
+      "path": "/dtc/simulation_ready.data",
+      "style": "bulb",
+      "fallbackColor": "#a0a0a0",
+      "fallbackLabel": "False",
+      "rules": [
+        {
+          "operator": "=",
+          "rawValue": "true",
+          "color": "#68e24a",
+          "label": "True"
+        }
+      ],
+      "foxglovePanelTitle": "Simulation Ready"
+    },
+    "Indicator!3232ihp": {
+      "path": "/dtc/competitor_ready.data",
+      "style": "bulb",
+      "fallbackColor": "#a0a0a0",
+      "fallbackLabel": "False",
+      "rules": [
+        {
+          "operator": "=",
+          "rawValue": "true",
+          "color": "#68e24a",
+          "label": "True"
+        }
+      ],
+      "foxglovePanelTitle": "Competitor Ready"
+    },
+    "Publish!4je66va": {
+      "buttonText": "Start",
+      "buttonTooltip": "",
+      "advancedView": false,
+      "value": "{}",
+      "topicName": "/dtc/simulation_start",
+      "datatype": "std_msgs/msg/Empty"
+    },
+    "Publish!4a0uoy1": {
+      "buttonText": "Stop",
+      "buttonTooltip": "",
+      "advancedView": false,
+      "value": "{}",
+      "topicName": "/dtc/simulation_stop",
+      "datatype": "std_msgs/msg/Empty"
+    }
+  },
+  "globalVariables": {},
+  "userNodes": {},
+  "playbackConfig": {
+    "speed": 1
+  },
+  "layout": {
+    "first": {
+      "first": {
+        "first": "RawMessages!15djhvb",
+        "second": {
+          "first": "RawMessages!25g8nzi",
+          "second": "RawMessages!3g5yg8l",
+          "direction": "column"
+        },
+        "direction": "column",
+        "splitPercentage": 29.313232830820773
+      },
+      "second": "Image!1bzylr2",
+      "direction": "row",
+      "splitPercentage": 63.46534653465346
+    },
+    "second": {
+      "direction": "row",
+      "first": "Tab!2afokmb",
+      "second": {
+        "first": "Image!3mnp456",
+        "second": {
+          "first": {
+            "first": "Indicator!114ll1e",
+            "second": "Indicator!3232ihp",
+            "direction": "column"
+          },
+          "second": {
+            "first": "Publish!4je66va",
+            "second": "Publish!4a0uoy1",
+            "direction": "column"
+          },
+          "direction": "row",
+          "splitPercentage": 51.69977642925582
+        },
+        "direction": "column",
+        "splitPercentage": 43.05806710870003
+      },
+      "splitPercentage": 63.46534653465346
+    },
+    "direction": "column",
+    "splitPercentage": 45.642201834862384
+  }
+}

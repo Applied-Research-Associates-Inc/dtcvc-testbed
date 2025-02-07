@@ -1,0 +1,20 @@
+{
+    "observation_start": 15.0,
+    "observation_end": 30.0,
+    "assessment_time": 30.0,
+    "casualty_id": 0,
+    "drone_id": 10,
+    "location": {
+        "lon": 8.110518,
+        "lat": 48.926896,
+        "alt": -30.544445
+    },
+    "injuries": {
+        "trauma": {
+            "head": "normal",
+            "torso": "normal",
+            "upper_extremity": "normal",
+            "lower_extremity": "wound"
+        }
+    }
+}

@@ -1,0 +1,157 @@
+Razish:
+
+Zone: 1
+"Altitude": "-30.419838",
+"Latitude": "48.926884",
+"Longitude": "8.110344"
+--
+Zone: 2
+"Altitude": "-30.488405",
+"Latitude": "48.926889",
+"Longitude": "8.110252"
+--
+Zone: 3
+"Altitude": "-30.544445",
+"Latitude": "48.926896",
+"Longitude": "8.110518"
+--
+Zone: 4
+"Altitude": "-30.62149",
+"Latitude": "48.926891",
+"Longitude": "8.109992"
+--
+Zone: 5
+"Altitude": "-30.628592",
+"Latitude": "48.926919",
+"Longitude": "8.110606"
+--
+Zone: 6
+"Altitude": "-30.989038",
+"Latitude": "48.927021",
+"Longitude": "8.110794"
+--
+Zone: 7
+"Altitude": "-31.896814",
+"Latitude": "48.927025",
+"Longitude": "8.11006"
+--
+Zone: 8
+"Altitude": "-31.900574",
+"Latitude": "48.92705",
+"Longitude": "8.109631"
+--
+Zone: 9
+"Altitude": "-32.331894",
+"Latitude": "48.92709",
+"Longitude": "8.110477"
+--
+Zone: 10
+"Altitude": "-32.806835",
+"Latitude": "48.927161",
+"Longitude": "8.109819"
+--
+Zone: 11
+"Altitude": "-31.709185",
+"Latitude": "48.927183",
+"Longitude": "8.110883"
+--
+Zone: 12
+"Altitude": "-33.021881",
+"Latitude": "48.927199",
+"Longitude": "8.110592"
+--
+Zone: 13
+"Altitude": "-31.884249",
+"Latitude": "48.927231",
+"Longitude": "8.110981"
+--
+Zone: 14
+"Altitude": "-32.558193",
+"Latitude": "48.927235",
+"Longitude": "8.109557"
+--
+Zone: 15
+"Altitude": "-32.951206",
+"Latitude": "48.92724",
+"Longitude": "8.10978"
+--
+Zone: 16
+"Altitude": "-32.928757",
+"Latitude": "48.927249",
+"Longitude": "8.110783"
+--
+Zone: 17
+"Altitude": "-34.101612",
+"Latitude": "48.927657",
+"Longitude": "8.109714"
+--
+Zone: 18
+"Altitude": "-33.058281",
+"Latitude": "48.927359",
+"Longitude": "8.110661"
+--
+Zone: 19
+"Altitude": "-33.177517",
+"Latitude": "48.927381",
+"Longitude": "8.10952"
+--
+Zone: 20
+"Altitude": "-32.697914",
+"Latitude": "48.927387",
+"Longitude": "8.110981"
+--
+Zone: 21
+"Altitude": "-33.152672",
+"Latitude": "48.927434",
+"Longitude": "8.110637"
+--
+Zone: 22
+"Altitude": "-34.678478",
+"Latitude": "48.927453",
+"Longitude": "8.1098"
+--
+Zone: 23
+"Altitude": "-32.399593",
+"Latitude": "48.927343",
+"Longitude": "8.110828"
+--
+Zone: 24
+"Altitude": "-33.676884",
+"Latitude": "48.927518",
+"Longitude": "8.110562"
+--
+Zone: 25
+"Altitude": "-33.856438",
+"Latitude": "48.927591",
+"Longitude": "8.110417"
+--
+Zone: 26
+"Altitude": "-34.267887",
+"Latitude": "48.927575",
+"Longitude": "8.109958"
+--
+Zone: 27
+"Altitude": "-33.764217",
+"Latitude": "48.927595",
+"Longitude": "8.110782"
+--
+Zone: 28
+"Altitude": "-33.961445",
+"Latitude": "48.927629",
+"Longitude": "8.110065"
+--
+Zone: 29
+"Altitude": "-33.972782",
+"Latitude": "48.927681",
+"Longitude": "8.110534"
+--
+Zone: 30
+"Altitude": "-34.672203",
+"Latitude": "48.927752",
+"Longitude": "8.110024"
+--
+Zone: 0
+"Altitude": "0",
+"Latitude": "0",
+"Longitude": "0"
+--

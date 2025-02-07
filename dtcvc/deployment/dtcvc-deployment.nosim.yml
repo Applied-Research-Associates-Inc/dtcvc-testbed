@@ -1,0 +1,35 @@
+services:
+  scorekeeper:
+    extends:
+      file: dtcvc-services.yml
+      service: scorekeeper
+    ipc: host
+    network_mode: host
+    volumes:
+      - ${DTCVC_COMPETITION_RECORDINGS_PATH:-../../output/recordings}:/opt/ros-recordings
+      - ${DTCVC_SCENARIO_RECORDINGS_PATH:-../../output/scenario_recordings}:/opt/scenario-recordings
+      - ${DTCVC_SIM_SCENARIO:-./config/scenario.example.yaml}:/scenario.yaml
+      - ../../output/logs:/opt/logs
+      - ../../data/ground_truth:/opt/data/ground_truth
+      - ../../data/maps:/opt/data/maps
+  
+  competitor:
+    extends:
+      file: dtcvc-services.yml
+      service: competitor
+    depends_on:
+      - scorekeeper
+    ipc: host
+    network_mode: host
+    volumes:
+      - ../../output/logs:/opt/logs
+      - ../../data/audio:/mnt/wavs
+  
+  visualizer:
+    profiles:
+      - debug
+    extends:
+      file: dtcvc-services.yml
+      service: visualizer
+    depends_on:
+      - scorekeeper

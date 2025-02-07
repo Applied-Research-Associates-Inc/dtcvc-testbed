@@ -1,0 +1,4 @@
+CasualtyReport[] casualty_reports
+float64 completion_time
+uint8 drone_count
+uint8 report_id

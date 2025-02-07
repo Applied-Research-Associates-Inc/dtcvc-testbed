@@ -1,0 +1,4 @@
+bool severe_hemorrhage
+bool respiratory_distress
+Trauma trauma
+Alertness alertness

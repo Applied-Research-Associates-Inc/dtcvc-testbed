@@ -1,0 +1,16 @@
+{
+    "observation_start": 15.0,
+    "observation_end": 30.0,
+    "assessment_time": 30.0,
+    "casualty_id": 0,
+    "drone_id": 10,
+    "location": {
+        "lon": 8.109992,
+        "lat": 48.926891,
+        "alt": -30.62149
+    },
+    "vitals": {
+        "heart_rate": 75.0,
+        "respiration_rate": 14.0
+    }
+}

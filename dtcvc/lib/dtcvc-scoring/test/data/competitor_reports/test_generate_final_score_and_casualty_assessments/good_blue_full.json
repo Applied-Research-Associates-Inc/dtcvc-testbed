@@ -1,0 +1,31 @@
+{
+    "observation_start": 15.0,
+    "observation_end": 30.0,
+    "assessment_time": 30.0,
+    "casualty_id": 20,
+    "drone_id": 20,
+    "location": {
+        "lon": 8.110252,
+        "lat": 48.926889,
+        "alt": -30.488405
+    },
+    "vitals": {
+        "heart_rate": 72,
+        "respiration_rate": 14
+    },
+    "injuries": {
+        "severe_hemorrhage": false,
+        "respiratory_distress": false,
+        "trauma": {
+            "head": "normal",
+            "torso": "normal",
+            "upper_extremity": "normal",
+            "lower_extremity": "wound"
+        },
+        "alertness": {
+            "ocular": "open",
+            "verbal": "normal",
+            "motor": "abnormal"
+        }
+    }
+}

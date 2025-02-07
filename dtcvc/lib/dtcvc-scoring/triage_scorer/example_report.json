@@ -1,0 +1,94 @@
+{
+    "0": {
+        "reports": [
+            {
+                "casualty_id": 0,
+                "observation_start": 7.6,
+                "observation_end": 10.3,
+                "assessment_time": 8.95,
+                "location": {
+                    "lon": -117.24754,
+                    "lat": 28.23678,
+                    "alt": 17.2
+                },
+                "vitals": {
+                    "heart_rate": 72
+                }
+            },
+            {
+                "casualty_id": 0,
+                "observation_start": 15,
+                "observation_end": 25,
+                "assessment_time": 25,
+                "location": {
+                    "lon": -117.24754,
+                    "lat": 28.23678,
+                    "alt": 17.2
+                },
+                "vitals": {
+                    "respiration_rate": 16
+                },
+                "injuries": {
+                    "respiratory_distress": false,
+                    "trauma": {
+                        "torso": "wound"
+                    }
+                }
+            },
+            {
+                "casualty_id": 0,
+                "observation_start": 15,
+                "observation_end": 25,
+                "assessment_time": 25,
+                "location": {
+                    "lon": -117.24754,
+                    "lat": 28.23678,
+                    "alt": 17.2
+                },
+                "injuries": {
+                    "alertness": {
+                        "ocular": "open",
+                        "verbal": "abnormal",
+                        "motor": "absent"
+                    }
+                }
+            },
+            {
+                "casualty_id": 0,
+                "observation_start": 35,
+                "observation_end": 47,
+                "assessment_time": 47,
+                "location": {
+                    "lon": -117.24754,
+                    "lat": 28.23678,
+                    "alt": 17.2
+                },
+                "vitals": {
+                    "heart_rate": 93,
+                    "respiration_rate": 22
+                },
+                "injuries": {
+                    "respiratory_distress": true
+                }
+            }
+        ],
+        "aggregate": {
+            "vitals": {
+                "heart_rate": 93,
+                "respiration_rate": 22
+            },
+            "injuries": {
+                "respiratory_distress": true,
+                "alertness": {
+                    "ocular": "open",
+                    "verbal": "abnormal",
+                    "motor": "absent"
+                },
+                "trauma": {
+                    "torso": "wound"
+                }
+            }
+        },
+        "score": 9
+    }
+}

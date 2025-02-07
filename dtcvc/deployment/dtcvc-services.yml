@@ -1,0 +1,67 @@
+services:
+  simulator:
+    image: dtcvc-simulator:${IMAGE_TAG:-latest}
+    # Ensure GPU is available within the container
+    runtime: nvidia
+    volumes:
+      # Expose the host's X11 socket
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      # - ../../../../../dtc_stable_0.2/Linux:/home/ueuser/dtcvc-simulator
+    environment:
+      - DISPLAY=$DISPLAY
+      - DTCVC_PLATFORM=${DTCVC_PLATFORM:-linux}
+      - DTCVC_NO_SIM_MODE=${DTCVC_NO_SIM_MODE:-false}
+      - DTCVC_SIM_PORT=${DTCVC_SIM_PORT:-2000}
+    # The dtcvc-simulator entrypoint is a bash script which requires an interactive terminal
+    tty: true
+    # Test to see if the CARLA API port is open
+    healthcheck:
+      test: netstat -ltn | grep -c ":2000"
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  scorekeeper:
+    image: dtcvc-scorekeeper:${IMAGE_TAG:-latest}
+    command:
+      [
+        "timeout:=20",
+        "enable_foxglove_bridge:=true",
+        "scenario_file:=/scenario.yaml",
+      ]
+    environment:
+      - DTCVC_SIM_REC_MODE=${DTCVC_SIM_REC_MODE:-false}
+      - DTCVC_PLATFORM=${DTCVC_PLATFORM:-linux}
+      - DTCVC_SIM_CUSTOM_HOSTNAME=${DTCVC_SIM_CUSTOM_HOSTNAME}
+      - DTCVC_SIM_PORT=${DTCVC_SIM_PORT:-2000}
+      - DTCVC_NO_SIM_MODE=${DTCVC_NO_SIM_MODE:-false}
+      - DTCVC_NO_SIM_PLAYBACK_FILE_NAME=${DTCVC_NO_SIM_PLAYBACK_FILE_NAME:-dtcvc_phase_1_scenario_recording.bag}
+      - DTCVC_RECORDING_FILE_NAME=${DTCVC_RECORDING_FILE_NAME}
+      - ROS_AUTOMATIC_DISCOVERY_RANGE=SUBNET
+    ports:
+      # Foxglove bridge
+      - "8765:8765"
+
+  visualizer:
+    image: ghcr.io/foxglove/studio:latest
+    volumes:
+      - ./config/foxglove-layout.json:/foxglove/default-layout.json
+    ports:
+      - "8080:8080"
+
+  competitor:
+    image: dtcvc-competitor
+    command:
+      [
+        "ros2",
+        "launch",
+        "dtcvc_competitor",
+        "dtcvc_competitor.launch.py",
+        "role_name:=dtc_vehicle",
+      ]
+    # Ensure GPU is available within the container
+    runtime: nvidia
+    environment:
+      - ROS_AUTOMATIC_DISCOVERY_RANGE=SUBNET
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
