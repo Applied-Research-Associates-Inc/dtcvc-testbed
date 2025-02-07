@@ -1,0 +1,16 @@
+services:
+  agent:
+    image: ${DTCVC_AGENT_IMAGE:-dtcvc-agent:latest}
+    command:
+      [
+        "ros2",
+        "launch",
+        "dtcvc_competitor",
+        "dtcvc_competitor.launch.py",
+        "role_name:=dtc_vehicle",
+      ]
+    environment:
+      - ROS_DISCOVERY_SERVER=${DTCVC_DISCOVERY_ADDRESS:-discovery}:${DTCVC_DISCOVERY_PORT:-11811}
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+    

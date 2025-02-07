@@ -92,6 +92,7 @@ def load_ground_truth(ground_truth_dir: str) -> dict[str, pd.DataFrame]:
     scored_cols: list[str] = [
         gtk.HEART_RATE,
         gtk.RESPIRATION_RATE,
+        gtk.CORE_TEMP,
         gtk.HA_SEVERE_HEMORRHAGE,
         gtk.HA_RESPIRATORY_DISTRESS,
         gtk.HA_HEAD_TRAUMA,
@@ -101,6 +102,7 @@ def load_ground_truth(ground_truth_dir: str) -> dict[str, pd.DataFrame]:
         gtk.HA_OCULAR_ALERTNESS,
         gtk.HA_VERBAL_ALERTNESS,
         gtk.HA_MOTOR_ALERTNESS,
+        gtk.GOLDEN_WINDOW
     ]
 
     for filename in ground_truth_dir_contents:

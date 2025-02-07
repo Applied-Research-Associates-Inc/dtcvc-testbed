@@ -1,0 +1,10 @@
+# This is the base definition for the swarm scorekeeper service
+
+services:
+  scorekeeper:
+    extends:
+      file: ../../services/scorekeeper.yml
+      service: scorekeeper
+    deploy:
+      restart_policy:
+        condition: none

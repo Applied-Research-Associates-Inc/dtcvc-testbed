@@ -1,0 +1,30 @@
+{
+    "casualty_id": 0,
+    "team": "team-1",
+    "system": "drone-1",
+    "location": {
+        "latitude": 48.926884,
+        "longitude": 8.110344,
+        "time_ago": 90.0
+    },
+    "hr": {
+        "value": 91.0,
+        "time_ago": 90.0
+    },
+    "rr": {
+        "value": 13.0,
+        "time_ago": 90.0
+    },
+    "alertness_ocular": {
+        "value": 1,
+        "time_ago": 135.0
+    },
+    "alertness_verbal": {
+        "value": 1,
+        "time_ago": 135.0
+    },
+    "alertness_motor": {
+        "value": 1,
+        "time_ago": 135.0
+    }
+}

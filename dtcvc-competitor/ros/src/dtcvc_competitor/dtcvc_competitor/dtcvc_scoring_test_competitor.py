@@ -16,13 +16,13 @@ class DtcvcScoringTestCompetitor(Node):
         self.generator = DtcvcTriageReportGenerator()
         self.triage_report_publisher = self.create_publisher(String, "/competitor/drone_results", 10)
 
-        self.generate_reports(10, 0)
-        self.generate_reports(12, 5)
-        self.generate_reports(8, 3)
-        self.generate_reports(20, 4)
-        self.generate_reports(16, 25)
+        self.generate_reports(casualty_id=0, team="team-1", system="drone-1")
+        self.generate_reports(casualty_id=5, team="team-2", system="drone-2")
+        self.generate_reports(casualty_id=3, team="team-3", system="drone-3")
+        self.generate_reports(casualty_id=4, team="team-4", system="drone-4")
+        self.generate_reports(casualty_id=9, team="team-5", system="drone-5")
 
-    def generate_reports(self, drone_id: int, casualty_id: int):
+    def generate_reports(self, casualty_id: int, team: str, system: str):
         """Generate each of the victim reports once.
 
         Args:
@@ -30,25 +30,14 @@ class DtcvcScoringTestCompetitor(Node):
             casualty_id (int): The ID of the casualty
         """
         time.sleep(3)
-        valid_report = self.generator.generate_valid_victim_report(drone_id=drone_id, casualty_id=casualty_id)
-        self.get_logger().info(f"valid_report={valid_report}")
-        self.triage_report_publisher.publish(String(data=json.dumps(valid_report)))
+        non_random_casualty_report = self.generator.generate_non_random_casualty_report(casualty_id=casualty_id, team=team, system=system)
+        self.get_logger().info(f"non_random_casualty_report={non_random_casualty_report}")
+        self.triage_report_publisher.publish(String(data=json.dumps(non_random_casualty_report)))
+
         time.sleep(3)
-        casualty_report = self.generator.generate_random_victim_vitals_only(drone_id=drone_id, casualty_id=casualty_id)
-        self.get_logger().info(str(casualty_report))
-        self.triage_report_publisher.publish(String(data=json.dumps(casualty_report)))
-        time.sleep(3)
-        casualty_report = self.generator.generate_random_victim_injuries_only(
-            drone_id=drone_id, casualty_id=casualty_id
-        )
-        self.get_logger().info(str(casualty_report))
-        self.triage_report_publisher.publish(String(data=json.dumps(casualty_report)))
-        time.sleep(3)
-        casualty_report = self.generator.generate_random_victim_complete_report(
-            drone_id=drone_id, casualty_id=casualty_id
-        )
-        self.get_logger().info(str(casualty_report))
-        self.triage_report_publisher.publish(String(data=json.dumps(casualty_report)))
+        random_casualty_report = self.generator.generate_random_casualty_report(casualty_id=casualty_id, team=team, system=system)
+        self.get_logger().info(str(random_casualty_report))
+        self.triage_report_publisher.publish(String(data=json.dumps(random_casualty_report)))
 
 
 def main(args=None):

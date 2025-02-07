@@ -1,0 +1,39 @@
+services:
+  scorekeeper:
+    image: ${DTCVC_SCOREKEEPER_IMAGE:-dtcvc-scorekeeper:latest}
+    command:
+      [
+        "timeout:=20",
+        "enable_foxglove_bridge:=true",
+        "scenario_file:=/mnt/config-testbed/${DTCVC_SCENARIO_FILENAME:-scenario.yml}",
+        "ground_truth_path:=/mnt/config-testbed/ground_truth",
+        "maps_path:=/mnt/config-testbed/maps",
+        "logs_path:=/mnt/output/logs",
+        "host:=simulator1"
+      ]
+    volumes:
+      - dtcvc-config-agent:/mnt/config-agent:ro
+      - dtcvc-config-testbed:/mnt/config-testbed:ro
+      - dtcvc-output-testbed:/mnt/output:rw
+    environment:
+      - DTCVC_SIM_REC_MODE=${DTCVC_SIM_REC_MODE:-false}
+      - DTCVC_PLATFORM=${DTCVC_PLATFORM:-linux}
+      - DTCVC_SIM_CUSTOM_HOSTNAME=${DTCVC_SIM_CUSTOM_HOSTNAME}
+      - DTCVC_SIM_PORT=${DTCVC_SIM_PORT:-2000}
+      - DTCVC_NO_SIM_MODE=${DTCVC_NO_SIM_MODE:-false}
+      - DTCVC_NO_SIM_PLAYBACK_FILE_NAME=${DTCVC_NO_SIM_PLAYBACK_FILE_NAME:-dtcvc_phase_1_scenario_recording.bag}
+      - DTCVC_RECORDING_FILE_NAME=${DTCVC_RECORDING_FILE_NAME}
+      # - ROS_AUTOMATIC_DISCOVERY_RANGE=SUBNET
+      - ROS_DISCOVERY_SERVER=${DTCVC_DISCOVERY_ADDRESS:-discovery}:${DTCVC_DISCOVERY_PORT:-11811}
+    ports:
+      # Foxglove bridge
+      # - 8765:8765
+      - published: 8765
+        target: 8765
+        mode: ingress
+        protocol: tcp
+    # healthcheck:
+    #   test: ros2 topic list | grep -c "/dtc/simulation_start"
+    #   interval: 5s
+    #   timeout: 3s
+    #   retries: 30

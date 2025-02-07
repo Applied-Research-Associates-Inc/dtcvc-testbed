@@ -1,0 +1,14 @@
+# This is the base definition for the swarm agent service
+
+services:
+  agent:
+    extends:
+      file: ../../services/agent.yml
+      service: agent
+    volumes:
+      # Containers run on arbitrary nodes and must use NFS volumes for centralized storage
+      - dtcvc-config-agent:/config:ro
+      - dtcvc-output-agent:/output:rw
+    deploy:
+      restart_policy:
+        condition: none

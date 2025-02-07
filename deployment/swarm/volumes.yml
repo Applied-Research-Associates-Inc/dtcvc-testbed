@@ -1,0 +1,30 @@
+# This is the definition for NFS volumes used in a swarm deployment
+volumes:
+  dtcvc-config-testbed:
+    name: dtcvc-config-testbed
+    # A read-only NFS volume for sharing configuration files required by the simulator and scorekeeper
+    driver_opts:
+      type: "nfs"
+      o: "addr=${NFS_ADDR},nolock,soft,ro,nfsvers=4"
+      device: ":/config/testbed"
+  dtcvc-config-agent:
+    name: dtcvc-config-agent
+    # A read-only NFS volume for sharing configuration files required by agents
+    driver_opts:
+      type: "nfs"
+      o: "addr=${NFS_ADDR},nolock,soft,ro,nfsvers=4"
+      device: ":/config/agent"
+  dtcvc-output-agent:
+    name: dtcvc-output-agent
+    # A read-write NFS volume for collecting output from agents
+    driver_opts:
+      type: "nfs"
+      o: "addr=${NFS_ADDR},nolock,soft,rw,nfsvers=4"
+      device: ":/output/agent"
+  dtcvc-output-testbed:
+    name: dtcvc-output-testbed
+    # A read-write NFS volume for collecting output from the simulator and scorekeeper
+    driver_opts:
+      type: "nfs"
+      o: "addr=${NFS_ADDR},nolock,soft,rw,nfsvers=4"
+      device: ":/output/testbed"

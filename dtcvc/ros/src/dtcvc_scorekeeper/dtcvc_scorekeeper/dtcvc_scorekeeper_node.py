@@ -4,24 +4,24 @@ import json
 import os
 import sys
 import time
-from collections import defaultdict
 from typing import Any
 
 import pandas as pd
 import rclpy
+from rclpy.clock import Clock, ClockType
 from jsonschema import validate, ValidationError
 from rclpy.node import Node
 from std_msgs.msg import Empty, String
 
 import triage_scorer.scoring as ts
-import triage_scorer.constants.competitor_report_keys as crk
 from dtcvc_scorekeeper_types.msg import *
 from triage_scorer import loading
+from triage_scorer.constants import enumerations as enums
 
 
 class DtcvcScorekeeper(Node):
-    TOPIC_COMPETITION_START = "/dtc/simulation_start"
-    TOPIC_COMPETITION_STOP = "/dtc/simulation_stop"
+    TOPIC_SIMULATION_START = "/dtc/simulation_start"
+    TOPIC_SIMULATION_STOP = "/dtc/simulation_stop"
     TOPIC_SCOREKEEPER_READY = "/dtc/scorekeeper_ready"
     TOPIC_TRIAGE_REPORT = "/competitor/drone_results"
 
@@ -33,10 +33,14 @@ class DtcvcScorekeeper(Node):
         )
 
         self._scenario_file = self.get_parameter("scenario_file").get_parameter_value().string_value
+        self._ground_truth_path = self.get_parameter("ground_truth_path").get_parameter_value().string_value
+        self._maps_path = self.get_parameter("maps_path").get_parameter_value().string_value
+        self._logs_path = self.get_parameter("logs_path").get_parameter_value().string_value
         self._casualty_id_cap: int = self.get_parameter("casualty_id_cap").get_parameter_value().integer_value
-        self._cats: defaultdict[str, ts.CasualtyAssessmentTracker] = defaultdict(lambda: ts.CasualtyAssessmentTracker())
         self._gts: list[tuple[tuple[float, float, float], pd.DataFrame]] = self.map_casualty_location_to_ground_truth()
         self._start_time: float = 0.0
+        self._score_tracker = ts.ScoreTracker(self._gts, self._casualty_id_cap)
+        self._reports: tuple[dict, enums.ReportRejection] = []
 
         self.init_topics()
         self.publish_ready_state()
@@ -49,12 +53,12 @@ class DtcvcScorekeeper(Node):
         """
         casualty_loc_to_gt: list[tuple[tuple[float, float, float], pd.DataFrame]] = []
         scenario: dict | None = loading.load_scenario(self._scenario_file)
-        maps: dict[str, dict[str, tuple[float, float, float]]] = loading.load_maps("/opt/data/maps")
+        maps: dict[str, dict[str, tuple[float, float, float]]] = loading.load_maps(self._maps_path)
         gps_zone_locations: dict[str, tuple[float, float, float]] = {}
-        ground_truth: dict[str, pd.DataFrame] = loading.load_ground_truth("/opt/data/ground_truth")
+        ground_truth: dict[str, pd.DataFrame] = loading.load_ground_truth(self._ground_truth_path)
 
         if scenario is not None:
-            scenario_map_name: str = str(scenario["map"])
+            scenario_map_name: str = str(scenario["environment"]["map"])
 
             for map_name in maps:
                 if map_name in scenario_map_name:
@@ -84,7 +88,7 @@ class DtcvcScorekeeper(Node):
         # Subscription receives a sim time update when the competition starts
         self.comp_start_subscription = self.create_subscription(
             Empty,
-            DtcvcScorekeeper.TOPIC_COMPETITION_START,
+            DtcvcScorekeeper.TOPIC_SIMULATION_START,
             self.comp_start_callback,
             qos_profile=10,
         )
@@ -98,17 +102,19 @@ class DtcvcScorekeeper(Node):
         # Subscription receives a stop competition signal
         self.stop_comp_subscription = self.create_subscription(
             Empty,
-            DtcvcScorekeeper.TOPIC_COMPETITION_STOP,
+            DtcvcScorekeeper.TOPIC_SIMULATION_STOP,
             self.stop_comp_callback,
             qos_profile=10,
         )
 
         # Publisher sends scorekeeper ready signal
         self.ready_publisher = self.create_publisher(Empty, DtcvcScorekeeper.TOPIC_SCOREKEEPER_READY, 10)
+        self.ready_timer = self.create_timer(1.0, self.publish_ready_state, clock=Clock(clock_type=ClockType.SYSTEM_TIME))
 
     def comp_start_callback(self, msg: Empty) -> None:
         """Sets the start time for the competition."""
         self.get_logger().info(f"comp_start_callback(): Received [simulation_start] signal")
+        self.ready_timer.cancel()
         # Start time is based on simulation time
         self._start_time = self.get_clock().now().nanoseconds / float(10**9)
         self.get_logger().info(f"comp_start_callback(): start time | {self._start_time}")
@@ -124,8 +130,9 @@ class DtcvcScorekeeper(Node):
 
         report: dict = json.loads(msg.data)
 
-        competitor_report_schema: Any | None = None
+        self.get_logger().info(str(report))
 
+        competitor_report_schema: Any | None = None
         filename: str = "triage_scorer/schemas/schema.json"
         base_path: str = os.getenv("DTCVC_SCORING_LIB_PATH", "/opt/dtcvc-scorekeeper/lib/dtcvc-scoring")
         schema_path: str = os.path.join(base_path, filename)
@@ -134,42 +141,27 @@ class DtcvcScorekeeper(Node):
             competitor_report_schema = json.load(f)
 
         try:
+            # Note: The jsonschema should validate reports such that all required fields and at least three health assessment fields are present.
             validate(instance=report, schema=competitor_report_schema)
             self.get_logger().info("drone_results_callback(): Validation success")
 
-            casualty_id: str = str(report[crk.CASUALTY_ID])
-            self.get_logger().info(f"drone_results_callback(): casualty_id | {casualty_id}")
-
-            self.get_logger().info(f"drone_results_callback(): _casualty_id_cap | {self._casualty_id_cap}")
-            # Check that a new casualty ID is not tracked if the list of CATs is at capacity
-            if casualty_id not in self._cats and len(self._cats) == self._casualty_id_cap:
-                self.get_logger().info(
-                    f"drone_results_callback(): New ID after reaching capacity(ID | msg): {casualty_id} | {msg}"
-                )
-                return
-
             report_time: float = abs(self._start_time - report_rcv_time)
             self.get_logger().info(f"drone_results_callback(): report_time | {report_time}")
-
-            # Create/update the dictionary with a mapping of the casualty ID to a CasualtyAssessmentTracker and track the report
-            cat: ts.CasualtyAssessmentTracker = self._cats[casualty_id]
-            cat.track_report(report, report_time)
-            self.get_logger().info(f"drone_results_callback(): cats.keys | {self._cats.keys()}")
-        except ValidationError:
+            err = self._score_tracker.track_report(report, report_time)
+            self._reports.append((report, err))
+        except ValidationError as err:
             self.get_logger().error(f"drone_results_callback(): Failed to validate message from competitor | {msg}")
+            self.get_logger().error(err)
+            self._reports.append((report, enums.ReportRejection.INVALID_REPORT))
 
     def stop_comp_callback(self, msg: Empty) -> None:
         """Handles the stopping of the competition."""
         self.get_logger().info("stop_comp_callback(): Received [simulation_stop] signal")
         runtime = loading.get_simulation_runtime(self._scenario_file)
-        if runtime is not None:
-            if runtime > 0:
-                ts.golden_window = runtime / 2
-                self.get_logger().info(f"stop_comp_callback(): golden_window | {ts.golden_window}")
 
-        final_report_filepath: str = f"/opt/logs/final_score_report_{time.time_ns()}.json"
+        final_report_filepath: str = os.path.join(self._logs_path, f"final_score_report_{time.time_ns()}.json")
         self.get_logger().info(f"stop_comp_callback(): Generating final report with filename | {final_report_filepath}")
-        ts.generate_final_report(final_report_filepath, self._cats, self._gts, runtime)
+        ts.generate_final_report(final_report_filepath, self._score_tracker, self._reports, runtime)
 
         # Shutdown the system
         self.get_logger().info("stop_comp_callback(): Shutting down the system with rclpy.shutdown()")

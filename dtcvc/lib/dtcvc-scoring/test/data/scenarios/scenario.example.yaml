@@ -196,9 +196,9 @@ casualties:
   casualty_30:
     zone: 30
     casualty_type: BP_Casualty_30
-  casualty_0:
-    zone: 0
-    casualty_type: BP_Casualty_00
+  # casualty_0:
+  #   zone: 0
+  #   casualty_type: BP_Casualty_00
 
 # Audio Mapping: Defines which audio file will go to what casualty. Not used by Competitors in the competition.
 # casualty_name: audio_file_name

@@ -1,0 +1,40 @@
+{
+    "casualty_id": 2,
+    "team": "team-2",
+    "system": "drone-2",
+    "location": {
+        "latitude": 48.926889,
+        "longitude": 8.110252,
+        "time_ago": 90.0
+    },
+    "severe_hemorrhage": 0,
+    "respiratory_distress": 0,
+    "hr": {
+        "value": 74.0,
+        "time_ago": 90.0
+    },
+    "rr": {
+        "value": 14.0,
+        "time_ago": 90.0
+    },
+    "temp": {
+        "value": 36.6,
+        "time_ago": 90.0
+    },
+    "trauma_head": 0,
+    "trauma_torso": 0,
+    "trauma_lower_ext": 1,
+    "trauma_upper_ext": 0,
+    "alertness_ocular": {
+        "value": 0,
+        "time_ago": 90.0
+    },
+    "alertness_verbal": {
+        "value": 0,
+        "time_ago": 90.0
+    },
+    "alertness_motor": {
+        "value": 1,
+        "time_ago": 90.0
+    }
+}

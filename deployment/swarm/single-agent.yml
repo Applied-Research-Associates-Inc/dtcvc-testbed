@@ -1,0 +1,45 @@
+services:
+  simulator1:
+    extends:
+      file: ./services/simulator.yml
+      service: simulator
+    deploy:
+      placement:
+        constraints:
+          # - node.labels.gpu == rtx4090
+          # - node.role != manager
+          # - node.hostname == simulator-host
+    networks:
+      - dtcvc-network
+
+  agent1:
+    extends:
+      file: ./services/agent.yml
+      service: agent
+    deploy:
+      placement:
+        constraints:
+          # - node.labels.gpu == rtx2080
+          # - node.role != manager
+          # - node.hostname == agent-host
+    networks:
+      - dtcvc-network
+
+  scorekeeper:
+    extends:
+      file: ./services/scorekeeper.yml
+      service: scorekeeper
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+    networks:
+      - dtcvc-network
+
+
+networks:
+  dtcvc-network:
+    external: true
+
+include:
+  - ./volumes.yml

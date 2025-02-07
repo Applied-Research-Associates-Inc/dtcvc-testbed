@@ -49,7 +49,7 @@ class DtcvcCompetitor(Node):
 
         self.publish_ready_state()
         # Start sending ready signal (using system clock)
-        # self.ready_timer = self.create_timer(1.0, self.publish_ready_state, clock=Clock(clock_type=ClockType.SYSTEM_TIME))
+        self.ready_timer = self.create_timer(1.0, self.publish_ready_state, clock=Clock(clock_type=ClockType.SYSTEM_TIME))
 
     def init_topics(self):
         # Handles competition start signal
@@ -84,7 +84,7 @@ class DtcvcCompetitor(Node):
         self.original_start_time = self.get_clock().now().nanoseconds / float(10**9)
         self.get_logger().info(f"comp_start_callback(): start_time | {self.original_start_time}")
         self.start_report_timer()
-        # self.ready_timer.cancel()
+        self.ready_timer.cancel()
 
     def comp_stop_callback(self, msg):
         self.get_logger().info("comp_stop_callback(): Received [simulation_stop] signal")

@@ -1,0 +1,14 @@
+# This is the base definition for the swarm simulator service
+
+services:
+  simulator:
+    extends:
+      file: ../../services/simulator.yml
+      service: simulator
+    volumes:
+      # Containers run on arbitrary nodes and must use NFS volumes for centralized storage
+      - dtcvc-config-testbed:/mnt/config:ro
+      - dtcvc-output-testbed:/mnt/output:rw
+    deploy:
+      restart_policy:
+        condition: none

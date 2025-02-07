@@ -68,11 +68,13 @@ def generate_launch_description():
         emulate_tty="True",
         on_exit=launch.actions.Shutdown(),
         parameters=[
-            {"use_sim_time": True},
-            {"enable_ground_truth_intake": LaunchConfiguration("enable_ground_truth_intake")},
-            {"ground_truth_path": LaunchConfiguration("ground_truth_path")},
-            {"casualty_id_cap": LaunchConfiguration("casualty_id_cap")},
             {"scenario_file": LaunchConfiguration("scenario_file")},
+            {"ground_truth_path": LaunchConfiguration("ground_truth_path")},
+            {"maps_path": LaunchConfiguration("maps_path")},
+            {"logs_path": LaunchConfiguration("logs_path")},
+            {"casualty_id_cap": LaunchConfiguration("casualty_id_cap")},
+            # {"use_sim_time": True},
+            # {"enable_ground_truth_intake": LaunchConfiguration("enable_ground_truth_intake")},
         ],
     )
 
@@ -101,7 +103,7 @@ def generate_launch_description():
         output="screen",
         emulate_tty="True",
         on_exit=launch.actions.Shutdown(),
-        # arguments=['--ros-args', '--log-level', LaunchConfiguration('log_level')],
+        arguments=['--ros-args', '--log-level', LaunchConfiguration('log_level')],
         parameters=[
             {"use_sim_time": True},
             {"scenario_file": LaunchConfiguration("scenario_file")},
@@ -158,15 +160,25 @@ def generate_launch_description():
                 default_value="True",
                 description="Enable verbose logging for the scenario manager",
             ),
-            launch.actions.DeclareLaunchArgument(
-                name="enable_ground_truth_intake",
-                default_value="True",
-                description="Enable/Disable ground truth data extraction from 'ground_truth_path'. ",
-            ),
+            # launch.actions.DeclareLaunchArgument(
+            #     name="enable_ground_truth_intake",
+            #     default_value="True",
+            #     description="Enable/Disable ground truth data extraction from 'ground_truth_path'. ",
+            # ),
             launch.actions.DeclareLaunchArgument(
                 name="ground_truth_path",
                 default_value="/opt/ground_truth",
                 description="Path to ground truth data directory.",
+            ),
+            launch.actions.DeclareLaunchArgument(
+                name="maps_path",
+                default_value="/opt/ground_truth",
+                description="Path to maps data directory.",
+            ),
+            launch.actions.DeclareLaunchArgument(
+                name="logs_path",
+                default_value="/opt/ground_truth",
+                description="Path to maps data directory.",
             ),
             launch.actions.DeclareLaunchArgument(
                 name="record_on_startup",

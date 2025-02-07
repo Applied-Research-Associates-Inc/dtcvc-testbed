@@ -1,0 +1,7 @@
+services:
+  visualizer:
+    image: ghcr.io/foxglove/studio:latest
+    volumes:
+      - ./config/foxglove-layout.json:/foxglove/default-layout.json
+    ports:
+      - "8080:8080"

@@ -1,220 +1,172 @@
-"""Will publish a single report and then spin forever"""
+"""Will publish a single casualty report and then spin forever"""
 
 import json
 import random
 from std_msgs.msg import String
 
-import triage_scorer.scoring as ts
-import triage_scorer.constants.enumerations as enm
-import triage_scorer.constants.competitor_report_keys as crk
+import triage_scorer.constants.casualty_report_keys as crk
+
+
+_SEVERE_HEMORRHAGE_STATES = { 0, 1 }
+_RESPIRATORY_DISTRESS_STATES = { 0, 1 }
+_TRAUMA_HEAD_STATES = { 0, 1, 2 }
+_TRAUMA_TORSO_STATES = { 0, 1, 2 }
+_TRAUMA_LOWER_EXT_STATES = { 0, 1, 2, 3 }
+_TRAUMA_UPPER_EXT_STATES = { 0, 1, 2, 3 }
+_ALERTNESS_OCULAR_STATES = { 0, 1, 2 }
+_ALERTNESS_VERBAL_STATES = { 0, 1, 2, 3 }
+_ALERTNESS_MOTOR_STATES = { 0, 1, 2, 3 }
 
 
 class DtcvcTriageReportGenerator:
-    """Utility class for generating random triage reports for debugging and testing"""
+    """Utility class for generating random casualty reports for debugging and testing"""
 
-    REPORT_VALID = "valid"
-    REPORT_RANDOM_VITALS = "random-vitals"
-    REPORT_RANDOM_INJURIES = "random-injuries"
+    REPORT_NON_RANDOM_COMPLETE = "non-random-complete"
     REPORT_RANDOM_COMPLETE = "random-complete"
 
     REPORT_TYPES = [
-        REPORT_VALID,
-        REPORT_RANDOM_VITALS,
-        REPORT_RANDOM_INJURIES,
+        REPORT_NON_RANDOM_COMPLETE,
         REPORT_RANDOM_COMPLETE,
     ]
 
-    def __init__(self, drone_count=2, casualty_count=10):
-        self.drone_count = drone_count
+    def __init__(self, casualty_count=10, team_count=3, system_count=3):
         self.casualty_count = casualty_count
+        self.team_count = team_count
+        self.system_count = system_count
 
     def publish_random(self, publisher):
         self.publish(
             publisher,
             random.sample(DtcvcTriageReportGenerator.REPORT_TYPES, 1)[0],
-            random.randint(1, self.drone_count),
             random.randint(1, self.casualty_count),
+            random.randint(1, self.team_count),
+            random.randint(1, self.system_count)
         )
 
-    def publish(self, publisher, report_type: str, drone_id: int, casualty_id: int):
+    def publish(self, publisher, report_type: str, casualty_id: int, team_id: int, system_id: int):
         report = None
         match report_type:
-            case DtcvcTriageReportGenerator.REPORT_VALID:
-                report = self.generate_valid_victim_report(drone_id=drone_id, casualty_id=casualty_id)
-            case DtcvcTriageReportGenerator.REPORT_RANDOM_VITALS:
-                report = self.generate_random_victim_vitals_only(drone_id=drone_id, casualty_id=casualty_id)
-            case DtcvcTriageReportGenerator.REPORT_RANDOM_INJURIES:
-                report = self.generate_random_victim_injuries_only(drone_id=drone_id, casualty_id=casualty_id)
+            case DtcvcTriageReportGenerator.REPORT_NON_RANDOM_COMPLETE:
+                report = self.generate_non_random_casualty_report(casualty_id=casualty_id, team=f"team-{team_id}", system=f"system-{system_id}")
             case DtcvcTriageReportGenerator.REPORT_RANDOM_COMPLETE:
-                report = self.generate_random_victim_complete_report(drone_id=drone_id, casualty_id=casualty_id)
+                report = self.generate_random_casualty_report(casualty_id=casualty_id, team=f"team-{team_id}", system=f"system-{system_id}")
         if report is not None:
             publisher.publish(String(data=json.dumps(report)))
 
-    def generate_random_victim_vitals_only(self, drone_id: int, casualty_id: int) -> dict:
-        """Generates a victim report containing vitals data only.
+    def generate_random_casualty_report(
+            self, 
+            casualty_id: int, 
+            team: str, 
+            system: str) -> dict:
+        """Generates a casualty report with all health assessment fields defined.
 
         Args:
-            drone_id (int): The ID of the drone
             casualty_id (int): The ID of the casualty
+            team (str): The team ID
+            system (str): The drone ID
 
         Returns:
-            dict: The victim report containing vitals data
+            dict: Casualty report with random health assessment data
         """
-        self.ocular_states = list(enm.OCULAR_STATES)
-        self.verbal_states = list(enm.VERBAL_STATES)
-        self.motor_states = list(enm.MOTOR_STATES)
-        self.general_injury_states = list(enm.GENERAL_INJURY_STATES)
-
-        self.head_torso_trauma_states = list(enm.HEAD_TORSO_TRAUMA_STATES)
-        self.extremity_trauma_states = list(enm.EXTREMITY_TRAUMA_STATES)
+        self.severe_hemorrhage_states = list(_SEVERE_HEMORRHAGE_STATES)
+        self.respiratory_distress_states = list(_RESPIRATORY_DISTRESS_STATES)
+        self.trauma_head_states = list(_TRAUMA_HEAD_STATES)
+        self.trauma_torso_states = list(_TRAUMA_TORSO_STATES)
+        self.trauma_lower_ext_states = list(_TRAUMA_LOWER_EXT_STATES)
+        self.trauma_upper_ext_states = list(_TRAUMA_UPPER_EXT_STATES)
+        self.alertness_ocular_states = list(_ALERTNESS_OCULAR_STATES)
+        self.alertness_verbal_states = list(_ALERTNESS_VERBAL_STATES)
+        self.alertness_motor_states = list(_ALERTNESS_MOTOR_STATES)
 
         temp_report = {}
-        temp_report[crk.OBSERVATION_START] = random.uniform(0, 100)
-        assessment_time = random.uniform(temp_report[crk.OBSERVATION_START], 100)
-        temp_report[crk.OBSERVATION_END] = assessment_time + random.uniform(0, 10)
-        temp_report[crk.ASSESSMENT_TIME] = assessment_time
         temp_report[crk.CASUALTY_ID] = casualty_id
-        temp_report[crk.DRONE_ID] = drone_id
-
+        temp_report[crk.TEAM] = team 
+        temp_report[crk.SYSTEM] = system 
         temp_report[crk.LOCATION] = {}
-        temp_report[crk.LOCATION][crk.LON] = random.uniform(-180, 180)
-        temp_report[crk.LOCATION][crk.LAT] = random.uniform(-90, 90)
-        temp_report[crk.LOCATION][crk.ALT] = random.uniform(-10000, 10000)
-
-        temp_report[crk.VITALS] = {}
-        temp_report[crk.VITALS][crk.HEART_RATE] = random.uniform(50, 120)
-        temp_report[crk.VITALS][crk.RESPIRATION_RATE] = random.uniform(0, 50)
+        temp_report[crk.LOCATION][crk.LATITUDE] = random.uniform(-90, 90)
+        temp_report[crk.LOCATION][crk.LONGITUDE] = random.uniform(-180, 180)
+        temp_report[crk.LOCATION][crk.TIME_AGO] = random.uniform(15.0, 45.0)
+        temp_report[crk.SEVERE_HEMORRHAGE] = random.sample(self.severe_hemorrhage_states, 1)[0]
+        temp_report[crk.RESPIRATORY_DISTRESS] = random.sample(self.respiratory_distress_states, 1)[0]
+        temp_report[crk.HEART_RATE] = {}
+        temp_report[crk.HEART_RATE][crk.HA_VALUE] = random.uniform(50.0, 120.0)
+        temp_report[crk.HEART_RATE][crk.TIME_AGO] = random.uniform(50.0, 210.0)
+        temp_report[crk.RESPIRATION_RATE] = {}
+        temp_report[crk.RESPIRATION_RATE][crk.HA_VALUE] = random.uniform(0.0, 50.0)
+        temp_report[crk.RESPIRATION_RATE][crk.TIME_AGO] = random.uniform(50.0, 210.0)
+        temp_report[crk.CORE_TEMP] = {}
+        temp_report[crk.CORE_TEMP][crk.HA_VALUE] = random.uniform(20.0, 40.0)
+        temp_report[crk.CORE_TEMP][crk.TIME_AGO] = random.uniform(50.0, 210.0)
+        temp_report[crk.TRAUMA_HEAD] = random.sample(self.trauma_head_states, 1)[0]
+        temp_report[crk.TRAUMA_TORSO] = random.sample(self.trauma_torso_states, 1)[0]
+        temp_report[crk.TRAUMA_LOWER_EXTREMITY] = random.sample(self.trauma_lower_ext_states, 1)[0]
+        temp_report[crk.TRAUMA_UPPER_EXTREMITY] = random.sample(self.trauma_upper_ext_states, 1)[0]
+        temp_report[crk.ALERTNESS_OCULAR] = {}
+        temp_report[crk.ALERTNESS_OCULAR][crk.HA_VALUE] = random.sample(self.alertness_ocular_states, 1)[0]
+        temp_report[crk.ALERTNESS_OCULAR][crk.TIME_AGO] = random.uniform(50.0, 210.0)
+        temp_report[crk.ALERTNESS_VERBAL] = {}
+        temp_report[crk.ALERTNESS_VERBAL][crk.HA_VALUE] = random.sample(self.alertness_verbal_states, 1)[0]
+        temp_report[crk.ALERTNESS_VERBAL][crk.TIME_AGO] = random.uniform(50.0, 210.0)
+        temp_report[crk.ALERTNESS_MOTOR] = {}
+        temp_report[crk.ALERTNESS_MOTOR][crk.HA_VALUE] = random.sample(self.alertness_motor_states, 1)[0]
+        temp_report[crk.ALERTNESS_MOTOR][crk.TIME_AGO] = random.uniform(50.0, 210.0)
 
         return temp_report
 
-    def generate_random_victim_injuries_only(self, drone_id: int, casualty_id: int) -> dict:
-        """Generates a victim report containing injuries data only.
+    def generate_non_random_casualty_report(
+            self, 
+            casualty_id: int, 
+            team: str, 
+            system: str) -> dict:
+        """Generates a casualty report that should always successfully validate against the current version of the schema.
 
         Args:
-            drone_id (int): The ID of the drone
             casualty_id (int): The ID of the casualty
+            team (str): The team ID
+            system (str): The drone ID
 
         Returns:
-            dict: The victim report containing injuries data
-        """
-        self.ocular_states = list(enm.OCULAR_STATES)
-        self.verbal_states = list(enm.VERBAL_STATES)
-        self.motor_states = list(enm.MOTOR_STATES)
-        self.general_injury_states = list(enm.GENERAL_INJURY_STATES)
-
-        self.head_torso_trauma_states = list(enm.HEAD_TORSO_TRAUMA_STATES)
-        self.extremity_trauma_states = list(enm.EXTREMITY_TRAUMA_STATES)
-
-        temp_report = {}
-        temp_report[crk.OBSERVATION_START] = random.uniform(0, 100)
-        assessment_time = random.uniform(temp_report[crk.OBSERVATION_START], 100)
-        temp_report[crk.OBSERVATION_END] = assessment_time + random.uniform(0, 10)
-        temp_report[crk.ASSESSMENT_TIME] = assessment_time
-        temp_report[crk.CASUALTY_ID] = casualty_id
-        temp_report[crk.DRONE_ID] = drone_id
-
-        temp_report[crk.LOCATION] = {}
-        temp_report[crk.LOCATION][crk.LON] = random.uniform(-180, 180)
-        temp_report[crk.LOCATION][crk.LAT] = random.uniform(-90, 90)
-        temp_report[crk.LOCATION][crk.ALT] = random.uniform(-10000, 10000)
-
-        temp_report[crk.INJURIES] = {}
-        temp_report[crk.INJURIES][crk.SEVERE_HEMORRHAGE] = random.choice([True, False])
-        temp_report[crk.INJURIES][crk.RESPIRATORY_DISTRESS] = random.choice([True, False])
-
-        temp_report[crk.INJURIES][crk.TRAUMA] = {}
-        temp_report[crk.INJURIES][crk.TRAUMA][crk.HEAD] = random.sample(self.head_torso_trauma_states, 1)[0]
-        temp_report[crk.INJURIES][crk.TRAUMA][crk.TORSO] = random.sample(self.head_torso_trauma_states, 1)[0]
-        temp_report[crk.INJURIES][crk.TRAUMA][crk.UPPER_EXTREMITY] = random.sample(self.extremity_trauma_states, 1)[0]
-        temp_report[crk.INJURIES][crk.TRAUMA][crk.LOWER_EXTREMITY] = random.sample(self.extremity_trauma_states, 1)[0]
-
-        temp_report[crk.INJURIES][crk.ALERTNESS] = {}
-        temp_report[crk.INJURIES][crk.ALERTNESS][crk.OCULAR] = random.sample(self.ocular_states, 1)[0]
-        temp_report[crk.INJURIES][crk.ALERTNESS][crk.VERBAL] = random.sample(self.verbal_states, 1)[0]
-        temp_report[crk.INJURIES][crk.ALERTNESS][crk.MOTOR] = random.sample(self.motor_states, 1)[0]
-
-        return temp_report
-
-    def generate_random_victim_complete_report(self, drone_id: int, casualty_id: int) -> dict:
-        """Generates a complete victim report containing all possible data fields.
-
-        Args:
-            drone_id (int): The ID of the drone
-            casualty_id (int): The ID of the casualty
-
-        Returns:
-            dict: The complete victim report
-        """
-        self.ocular_states = list(enm.OCULAR_STATES)
-        self.verbal_states = list(enm.VERBAL_STATES)
-        self.motor_states = list(enm.MOTOR_STATES)
-        self.general_injury_states = list(enm.GENERAL_INJURY_STATES)
-
-        self.head_torso_trauma_states = list(enm.HEAD_TORSO_TRAUMA_STATES)
-        self.extremity_trauma_states = list(enm.EXTREMITY_TRAUMA_STATES)
-
-        temp_report = {}
-        temp_report[crk.OBSERVATION_START] = random.uniform(0, 100)
-        assessment_time = random.uniform(temp_report[crk.OBSERVATION_START], 100)
-        temp_report[crk.OBSERVATION_END] = assessment_time + random.uniform(0, 10)
-        temp_report[crk.ASSESSMENT_TIME] = assessment_time
-        temp_report[crk.CASUALTY_ID] = casualty_id
-        temp_report[crk.DRONE_ID] = drone_id
-
-        temp_report[crk.LOCATION] = {}
-        temp_report[crk.LOCATION][crk.LON] = random.uniform(-180, 180)
-        temp_report[crk.LOCATION][crk.LAT] = random.uniform(-90, 90)
-        temp_report[crk.LOCATION][crk.ALT] = random.uniform(-10000, 10000)
-
-        temp_report[crk.VITALS] = {}
-        temp_report[crk.VITALS][crk.HEART_RATE] = random.uniform(50, 120)
-        temp_report[crk.VITALS][crk.RESPIRATION_RATE] = random.uniform(0, 50)
-
-        temp_report[crk.INJURIES] = {}
-        temp_report[crk.INJURIES][crk.SEVERE_HEMORRHAGE] = random.choice([True, False])
-        temp_report[crk.INJURIES][crk.RESPIRATORY_DISTRESS] = random.choice([True, False])
-
-        temp_report[crk.INJURIES][crk.TRAUMA] = {}
-        temp_report[crk.INJURIES][crk.TRAUMA][crk.HEAD] = random.sample(self.head_torso_trauma_states, 1)[0]
-        temp_report[crk.INJURIES][crk.TRAUMA][crk.TORSO] = random.sample(self.head_torso_trauma_states, 1)[0]
-        temp_report[crk.INJURIES][crk.TRAUMA][crk.UPPER_EXTREMITY] = random.sample(self.extremity_trauma_states, 1)[0]
-        temp_report[crk.INJURIES][crk.TRAUMA][crk.LOWER_EXTREMITY] = random.sample(self.extremity_trauma_states, 1)[0]
-
-        temp_report[crk.INJURIES][crk.ALERTNESS] = {}
-        temp_report[crk.INJURIES][crk.ALERTNESS][crk.OCULAR] = random.sample(self.ocular_states, 1)[0]
-        temp_report[crk.INJURIES][crk.ALERTNESS][crk.VERBAL] = random.sample(self.verbal_states, 1)[0]
-        temp_report[crk.INJURIES][crk.ALERTNESS][crk.MOTOR] = random.sample(self.motor_states, 1)[0]
-
-        return temp_report
-
-    def generate_valid_victim_report(self, drone_id: int, casualty_id: int) -> dict:
-        """Generates a hard-coded report that should always successfully validate against the current version of the schema.
-
-        Args:
-            drone_id (int): The ID of the drone
-            casualty_id (int): The ID of the casualty
-
-        Returns:
-            dict: The victim report with hard-coded data
+            dict: Casualty report with non-random health assessment data
         """
         report = {
-            "observation_start": 100.0,
-            "observation_end": 115.0,
-            "assessment_time": 115.0,
             "casualty_id": casualty_id,
-            "drone_id": drone_id,
-            "location": {"lon": -117.123456, "lat": 35.987654, "alt": 1000},
-            "vitals": {"heart_rate": 80, "respiration_rate": 50},
-            "injuries": {
-                "severe_hemorrhage": True,
-                "respiratory_distress": True,
-                "trauma": {"head": "wound"},
-                "alertness": {
-                    "ocular": "open",
-                    "verbal": "abnormal",
-                    "motor": "absent",
-                },
+            "team": team,
+            "system": system,
+            "location": {
+                "latitude": 48.926884,
+                "longitude": 8.110344,
+                "time_ago": 15.0
             },
+            "severe_hemorrhage": 0,
+            "respiratory_distress": 1,
+            "hr": {
+                "value": 75.0,
+                "time_ago": 30.0
+            },
+            "rr": {
+                "value": 13.0,
+                "time_ago": 45.0
+            },
+            "temp": {
+                "value": 36.5,
+                "time_ago": 60.0
+            },
+            "trauma_head": 0,
+            "trauma_torso": 0,
+            "trauma_lower_ext": 0,
+            "trauma_upper_ext": 0,
+            "alertness_ocular": {
+                "value": 0,
+                "time_ago": 75.0
+            },
+            "alertness_verbal": {
+                "value": 2,
+                "time_ago": 75.0
+            },
+            "alertness_motor": {
+                "value": 2,
+                "time_ago": 90.0
+            }
         }
 
         return report
