@@ -169,7 +169,7 @@ class DtcvcScorekeeper(Node):
 
     def publish_ready_state(self) -> None:
         """Publishes ready state, either True or False, on the /dtc/scorekeeper_ready topic."""
-        self.get_logger().info("publish_ready_state(): Sending [scorekeeper-node] ready signal")
+        self.get_logger().debug("publish_ready_state(): Sending [scorekeeper-node] ready signal")
         self.ready_publisher.publish(Empty())
 
 

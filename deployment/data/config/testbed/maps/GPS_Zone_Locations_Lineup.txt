@@ -1,0 +1,52 @@
+Lineup:
+
+Zone: 1
+"Altitude":"0.00000000",
+"Latitude":"35.03723521",
+"Longitude":"-106.54671811"
+--
+Zone: 2
+"Altitude":"0.00000000",
+"Latitude":"35.03732500",
+"Longitude":"-106.54671478"
+--
+Zone: 3
+"Altitude":"-0.00000000",
+"Latitude":"35.03741479",
+"Longitude":"-106.54671145"
+--
+Zone: 4
+"Altitude":"-0.00000000",
+"Latitude":"35.03750458",
+"Longitude":"-106.54670812"
+--
+Zone: 5
+"Altitude":"-0.00000000",
+"Latitude":"35.03759437",
+"Longitude":"-106.54670479"
+--
+Zone: 6
+"Altitude":"0.00000000",
+"Latitude":"35.03768416",
+"Longitude":"-106.54670146"
+--
+Zone: 7
+"Altitude":"-0.00000000",
+"Latitude":"35.03777395",
+"Longitude":"-106.54669813"
+--
+Zone: 8
+"Altitude":"0.00000000",
+"Latitude":"35.03786374",
+"Longitude":"-106.54669480"
+--
+Zone: 9
+"Altitude":"0.00000000",
+"Latitude":"35.03793920",
+"Longitude":"-106.54669480"
+--
+Zone: 10
+"Altitude":"-0.00000000",
+"Latitude":"35.03800568",
+"Longitude":"-106.54669480"
+--

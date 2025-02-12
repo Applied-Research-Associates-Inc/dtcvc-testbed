@@ -7,7 +7,7 @@
 # 3. vehicles: Contains parameters associated with configuring vehicles to be spawned into the world
 
 # Simulation runtime in seconds
-runtime: 120
+runtime: 60
 
 client:
   timeout: 60.0                               # Optional: Max time in seconds the Carla client will attempt a network call (default: 60.0).
@@ -18,10 +18,10 @@ environment:
   # StartingWorld: a blank empty space that Unreal opens into, also the map that loads when something goes wrong.
   # L_Razish_Carla: The Desert Map for executing missions. Has 30 Zones.
   # L_TrainCrash_Carla: The Train Crash Map for executing missions. Has 30 Zones.
-  # L_InternationalVillage_Carla: Small town.
+  # L_InternationalVillage_Carla: Small town with casualties
+  # L_IntNight_Carla: Small town but its at night.
+  # L_Lineup_Carla: Small town with 10 casualties lined up in a row. NOTE: The casualty list below must be updated
   map: L_InternationalVillage_Carla
-  # map: L_Razish_Carla
-  # map: L_TrainCrash_Carla
 vehicles:
   dtc_vehicle:                               # Arbitrary name describing the vehicle to be spawned into the world.
     type: quadcopter                         # Vehicle model type. Supported Option(s): quadcopter

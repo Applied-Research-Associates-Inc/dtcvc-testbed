@@ -1,5 +1,6 @@
 
 import rclpy
+import rclpy.clock
 from rclpy.node import Node
 from rcl_interfaces.msg import ParameterDescriptor
 from std_msgs.msg import Bool, Empty, Int32
@@ -120,6 +121,8 @@ class Timekeeper(Node):
 
         self.competition_running = False
 
+        self._system_clock = rclpy.clock.Clock(clock_type=rclpy.clock.ClockType.SYSTEM_TIME)
+
     def simulation_ready_callback(self, ready: Bool):
         self.get_logger().debug("simulation ready: %r" % ready.data)
 
@@ -134,12 +137,14 @@ class Timekeeper(Node):
                 self.send_stop_signal()
 
     def competitor_ready_callback(self, ready: Empty):
-        self.get_logger().info("competitor_ready_callback(): Competitor ready")
+        if not self.competitor_ready:
+            self.get_logger().info("competitor_ready_callback(): Competitor ready")
         self.competitor_ready = True
         self.check_all_ready()
 
     def scorekeeper_ready_callback(self, ready: Empty):
-        self.get_logger().info("scorekeeper_ready_callback(): Scorekeeper ready")
+        if not self.scorekeeper_ready:
+            self.get_logger().info("scorekeeper_ready_callback(): Scorekeeper ready")
         self.scorekeeper_ready = True
         self.check_all_ready()
 
@@ -177,12 +182,19 @@ class Timekeeper(Node):
         runtime = loading.get_simulation_runtime(self.scenario_file)
         if runtime is not None:
             self.simulation_duration = runtime
-            self.get_logger().info("start_competition_timer(): Starting simulation timer for %ds" % self.simulation_duration)
+            self._sim_start = self.get_clock().now()
+            self._real_start = self._system_clock.now()
             # Create a timer where the duration is equal to the runtime; this timer is based off simulation time since the 'use_sim_time' parameter is set to True
             self.simulation_timer = self.create_timer(self.simulation_duration, self.simulation_timeout_callback)
+            self.get_logger().info("start_competition_timer(): Starting simulation timer for %ds, current sim %dns, current real %dns" % (self.simulation_duration, self._sim_start.nanoseconds, self._real_start.nanoseconds))
 
     def simulation_timeout_callback(self):
-        self.get_logger().info(f"simulation_timeout_callback(): Simulation timeout, {self.get_clock().now().nanoseconds / float(10**9)} exceeds {self.simulation_duration}")
+        sim_end = self.get_clock().now()
+        real_end = self._system_clock.now()
+        sim_duration = sim_end.nanoseconds - self._sim_start.nanoseconds
+        real_duration = real_end.nanoseconds - self._real_start.nanoseconds
+
+        self.get_logger().info(f"simulation_timeout_callback(): Simulation timeout, current sim {sim_end.nanoseconds}ns, current real {real_end.nanoseconds}ns, duration sim {sim_duration / float(10**9)}s, duration real {real_duration / float(10**9)}s")
         self.simulation_timer.cancel()
         self.send_stop_signal()
 

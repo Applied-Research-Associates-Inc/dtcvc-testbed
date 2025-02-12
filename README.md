@@ -1,4 +1,4 @@
-# DARPA Triage Challenge - Virtual Competition - Public Repository
+# DARPA Triage Challenge - Virtual Competition - Testbed
 
 This repository contains resources and documentation for DTC-VC competitors, such as container images and local deployment scripts for the DTC-VC Testbed, a sample competitor container image, and the automated scoring library and service.
 
@@ -118,10 +118,10 @@ docker node update --label-rm gpu some-node-hostname
 
 ### Deploy Swarm Support Services
 
-DTC-VC testbed deployments require some additional services running on the manager node:
+DTC-VC testbed deployments require some additional configuration and services running on the manager node:
 - An overlay network for the testbed
 - A containerized NFS server to allow services on other hosts to access the `deployment/data` folder on the manager
-- A ROS2 discovery server to allow ROS2 nodes to pass messages (the default discovery mechanism relies on UDP broadcast for dicovery which swarm overlay networks do not support)
+- A ROS2 discovery server to allow ROS2 nodes to pass messages (the default discovery mechanism relies on UDP broadcast which swarm overlay networks do not support)
 
 All of these services can be started with the command:
 
@@ -129,7 +129,7 @@ All of these services can be started with the command:
 ./deployment/scripts/swarm-start-services.sh
 ```
 
-And if you need to stop, or reset it, run the command:
+And if you need to stop, or reset them, run the command:
 
 ```bash
 ./deployment/scripts/swarm-stop-services.sh
@@ -144,6 +144,8 @@ Container images must be built or loaded onto each host participating in the swa
 - Download the DTC-VC container images package (named `dtcvc-images-rYYYYMMDD.tgz`), for this example it's path is `~/path/to/dtcvc-images.tgz`, replace with the actual location accordingly.
 - Load images by issuing the following:
   - `docker load -i ~/path/to/dtcvc-images.tgz`
+- Use the `deployment/scripts/load-images.sh` script to load images onto a remote host:
+  - `./deployment/scripts/load-images.sh ~/path/to/dtcvc-images.tgz user@some-ssh-host`
 
 **Building container images locally**
 
@@ -205,7 +207,7 @@ The `deployment/scripts/deploy.sh` script encapsulates the `docker stack deploy`
 ./swarm-deploy.sh ./swarm/single-agent.yml
 ```
 
-This will immediately exit and should not produce any obvious crash or errors.
+This will immediately exit and should not produce any obvious crashes or errors.
 
 To check the status of the deployed testbed services use the `docker stack ps` command. Add the `--no-trunc` argument to show full error messages:
 

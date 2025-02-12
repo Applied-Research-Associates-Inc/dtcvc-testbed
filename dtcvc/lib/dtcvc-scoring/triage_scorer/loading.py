@@ -41,11 +41,11 @@ def load_map(map_path: str) -> tuple[str, dict[str, tuple[float, float, float]]]
         gps_zone_locations: dict[str, tuple[float, float, float]] = {}
         for entry in zone_entries:
             lines = entry.split("\n")
-            zone = lines[0].split(": ")[1]
+            zone = lines[0].split(":")[1].strip()
 
-            altitude = lines[1].split(": ")[1].split('"')[1]
-            latitude = lines[2].split(": ")[1].split('"')[1]
-            longitude = lines[3].split(": ")[1].split('"')[1]
+            altitude = lines[1].split(":")[1].strip().split('"')[1]
+            latitude = lines[2].split(":")[1].strip().split('"')[1]
+            longitude = lines[3].split(":")[1].strip().split('"')[1]
 
             gps_zone_locations[zone] = (float(longitude), float(latitude), float(altitude))
 

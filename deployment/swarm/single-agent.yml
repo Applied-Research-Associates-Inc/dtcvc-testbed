@@ -4,11 +4,11 @@ services:
       file: ./services/simulator.yml
       service: simulator
     deploy:
-      placement:
-        constraints:
-          # - node.labels.gpu == rtx4090
-          # - node.role != manager
-          # - node.hostname == simulator-host
+      # placement:
+      #   constraints:
+      #     # - node.labels.gpu == rtx4090
+      #     # - node.role != manager
+      #     # - node.hostname == simulator-host
     networks:
       - dtcvc-network
 
@@ -17,11 +17,11 @@ services:
       file: ./services/agent.yml
       service: agent
     deploy:
-      placement:
-        constraints:
-          # - node.labels.gpu == rtx2080
-          # - node.role != manager
-          # - node.hostname == agent-host
+      # placement:
+      #   constraints:
+      #     # - node.labels.gpu == rtx2080
+      #     # - node.role != manager
+      #     # - node.hostname == agent-host
     networks:
       - dtcvc-network
 

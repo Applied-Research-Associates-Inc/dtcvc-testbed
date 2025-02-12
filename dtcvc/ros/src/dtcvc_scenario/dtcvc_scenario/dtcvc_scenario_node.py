@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
-import os
-import argparse
+from time import sleep
 import yaml
 import logging
 import carla
@@ -9,7 +8,6 @@ import rclpy
 import threading
 import numpy as np
 import traceback
-from time import sleep
 
 from dtc_manager.TickManager import SyncState, TickManagerNode
 from dtc_manager.ControllerManager import ControllerManagerNode
@@ -20,13 +18,7 @@ from rclpy.parameter import Parameter
 from nav_msgs.msg import Odometry
 from std_msgs.msg import Bool
 from std_msgs.msg import Empty
-from std_msgs.msg import String
-from rosgraph_msgs.msg import Clock
-from sensor_msgs.msg import Imu
-from sensor_msgs.msg import NavSatFix
 
-python_file_path = os.path.realpath(__file__)
-python_file_path = python_file_path.replace("run_system_manager.py", "")
 global_transform = carla.Transform(carla.Location(x=0, y=0, z=0), carla.Rotation(yaw=180))
 
 def get_quaternion_from_euler(roll, pitch, yaw):
@@ -55,7 +47,7 @@ class SimulationScenarioNode(Node):
         super().__init__(
             "dtcvc_scenario_node",
             allow_undeclared_parameters=True,
-            automatically_declare_parameters_from_overrides=True,
+            automatically_declare_parameters_from_overrides=True
         )
 
 class SimulationStatusNode(Node):
@@ -64,7 +56,7 @@ class SimulationStatusNode(Node):
         super().__init__("carla_simulation_status")
         self._status = False
         self.publisher = self.create_publisher(Bool, "/dtc/simulation_ready", 10)
-        self._timer = self.create_timer(1.0, self.publish_status)
+        self._timer = self.create_timer(1, self.publish_status)
 
     def publish_status(self):
         msg = Bool()
@@ -361,19 +353,21 @@ def main(args=None):
     # Launch Scenario Node and get params
     simulation_scenario_node = SimulationScenarioNode()
 
-    file = simulation_scenario_node.get_parameter("file").get_parameter_value().string_value
+    scenario_path = simulation_scenario_node.get_parameter("file").get_parameter_value().string_value
     host = simulation_scenario_node.get_parameter("host").get_parameter_value().string_value
     port = simulation_scenario_node.get_parameter("port").get_parameter_value().integer_value
-    host = host if host else "localhost"
-    port = port if port else 2000
     clean_kill = simulation_scenario_node.get_parameter("clean_kill").get_parameter_value().bool_value
     verbose = simulation_scenario_node.get_parameter("verbose").get_parameter_value().bool_value
-
+    host = host if host else "localhost"
+    port = port if port else 2000
     log_level = logging.DEBUG if verbose else logging.INFO
     logging.basicConfig(level=log_level)
 
     # Load Scenario File
-    scenario_path = file if file else python_file_path + "scenarios/example.yaml"
+    if not scenario_path:
+        logging.info(" No Scenario File designated")
+        raise Exception("No Scenario File designated")
+
     logging.debug(" Loading Scenario File: %s", scenario_path)
     scenario_file = yaml.safe_load(open(scenario_path, "r"))
     logging.debug("  %s", scenario_file)
@@ -397,7 +391,8 @@ def main(args=None):
     # Spin in a separate thread
     executor_thread = threading.Thread(target=executor.spin, daemon=True)
     executor_thread.start()
-
+    
+    client = None
     world = None
     old_world = None
     original_settings = None
@@ -407,20 +402,18 @@ def main(args=None):
     try:
         # Setup CARLA World
         logging.debug(" Setting up Carla Client and Settings")
-        client = None
-        old_world = None
-        original_settings = None
-        while client == None:
+        while True:
             try:
                 logging.info(" Connecting to Carla at '%s:%d'", host, port)
                 client = carla.Client(host, port)
-                old_world = client.get_world()
-                original_settings = old_world.get_settings()
+                if client is not None:
+                    break
             except RuntimeError as err:
                 logging.info("  Error connecting to Carla: %s", err)
-                pass
-            if client == None:
                 sleep(5)
+
+        old_world = client.get_world()
+        original_settings = old_world.get_settings()
 
         # Setup Carla Client
         load_client_settings(client, scenario_file['client'], tick_manager_node)

@@ -2,7 +2,7 @@
 
 When running the testbed, many nodes are included due to the nature of the competition. However, when working to integrate systems with a controllable robot, a simplified version of running the testbed has been included to aid in simulation development and robot integration. This approach still uses Docker Swarm but allows the user to run a container outside of the Swarm to test things without the need to fully integrate anything into the swarm.
 
-**Note**: This step assumes that you have access to `dtcvc` and `DTC_TestingContainer` packages.
+**Note**: This step assumes that you have access to the `dtcvc-testbed` and `DTC_TestingContainer` packages.
 
 ## Setup and Run Simulation
 
@@ -10,14 +10,14 @@ These steps detail how to modify and run the simulation.
 
 ### Modify the Scenario File or Change the Path/Name of the Scenario
 
-If you wish to change things from the defaults, modify the scenario configuration found in `dtcvc/deployment/data/config/testbed/scenario.yaml` or the deployment configuration found in `dtcvc/deployment/swarm/solely-sim.yml`.
+If you wish to change things from the defaults, in the `dtcvc-testbed` package modify the scenario configuration found in `deployment/data/config/testbed/scenario.yaml` or the deployment configuration found in `deployment/swarm/solely-sim.yml`.
 
 ### Launch the Simulation Only Mode of the Virtual Testbed
 
-To launch the simulation and inject a scenario, run the command below:
+To launch the simulation and inject a scenario, from the `dtcvc-testbed` package run the command below:
 
 ```bash
-./deployment/scripts/swarm-deploy.sh ./swarm/solely-sim.yml
+./deployment/scripts/swarm-deploy.sh ./deployment/swarm/solely-sim.yml
 ```
 
 The scorekeeper should stop at:
@@ -38,10 +38,10 @@ Build this package by running `docker compose build` then move onto the followin
 
 The docker compose file and the XML for the discovery server connection need to have the ip acquired earlier added to them.
 
-In `compose_swarm.yaml`, change the ip on line 20 (10.0.1.2) to the one you acquired: 
+In `compose_swarm.yaml`, change the ip on line 20 (10.0.1.2) to the IP address of the manager node: 
 `- ROS_DISCOVERY_SERVER=10.0.1.2:${DISCOVERY_SERVER_PORT:-11811}`
 
-In `super_client_configuration_file.xml`, change the ip address on line 14 to the one you acquired.
+In `super_client_configuration_file.xml`, change the ip address on line 14 to the IP address of the manager node.
 
 ### Run RVIZ (Optional)
 
